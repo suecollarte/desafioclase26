@@ -8,17 +8,27 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { userModel } from './models/usuarios.model.js';
 import { config } from './utils/configMongo.js';
+import { logger } from "./src/utils/logger.config.js";
+import compression from 'compression';
 
+import cluster from 'cluster'
+import { cpus } from 'os'
 dotenv.config();
 
 import passport from "passport";
 import { Strategy } from "passport-local";
 const LocalStrategy = Strategy;
 
-const app = express();
+
+
+
+/* === cluster ===*/
+
+
+
 /* =============minimast ====*/
 import util from 'util';
-import os from 'os'
+
 
 /*========= */
 
@@ -30,6 +40,7 @@ const forkedProcess = fork('./random.js');
 
 /*======= minimist ====*/
 import minimist from "minimist";
+
 process.on('exit', (code)=>{
     let infoErr = {}
     console.log('exit code',code);
@@ -58,9 +69,9 @@ process.on('uncaughtException', (err)=>{
     process.exit(2)
 });
 
-const args = minimist(process.argv.slice(2));
-const numeros = args._;
-
+//const args = minimist(process.argv.slice(2));
+//const numeros = args._;
+const numeros=[1, 2, 3, 4];
 /* Primera valdiacion: Los datos de entrada no deben estar vacios*/
 if (numeros.length === 0) {
     console.log('args vacio')
@@ -170,6 +181,8 @@ passport.deserializeUser((username, done)=>{
 });
 
 /*----------- Session -----------*/
+
+const app = express();
 app.use(session({
     secret: "algo",
     resave: true,
@@ -218,8 +231,33 @@ function isAuth(req, res, next) {
 //const usuariosDB = [];
 
 /*============================[Rutas]============================*/
+const modoCluster = process.argv[2] == 'CLUSTER'
+
+if (modoCluster && cluster.isPrimary) {
+    const numCPUs = cpus().length
+
+    console.log(`Número de procesadores: ${numCPUs}`)
+    console.log(`PID MASTER ${process.pid}`)
+
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork()
+    }
+
+    cluster.on('exit', worker => {
+        console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
+        cluster.fork()
+    })
+} else {
+
+
 app.get('/', (req, res)=>{
-    res.redirect('/login')
+    //res.redirect('/login')
+    const primes = []
+        const max = Number(req.query.max) || 1000
+        for (let i = 1; i <= max; i++) {
+            if (isPrime(i)) primes.push(i)
+        }
+        res.json(primes)
 })
 
 app.get('/login', (req, res)=>{
@@ -246,13 +284,12 @@ app.get('/datos', isAuth, (req, res)=>{
 })
 
 app.get('/info', (req,res)=>{
-    const ll= process.cwd() + 'Id del proceso:'+process.pid
-    + 'Version de NodeJS:'+process.version
-    + 'Nombre del proceso:'+process.title
-    + 'Sistema Operativo::'+process.platform
-    + 'Uso memoria:'+ util.inspect(process.memoryUsage(), {showHidden: false, depth: 12, colors: true})
-
-    ;
+    const ll= process.cwd() + '\nId del proceso:'+process.pid
+    + '\nVersion de NodeJS:'+process.version
+    + '\nNombre del proceso:'+process.title
+    + '\nSistema Operativo:'+process.platform
+    + '\n\nUso memoria:'+ util.inspect(process.memoryUsage(), {showHidden: false, depth: 12, colorize: true })  ;
+    logger.info(`Parámetros ${util.inspect(process.memoryUsage(), {showHidden: false, depth: 12, colorize: true})} `);
 
     const infor ={
         directorio : ll
@@ -260,6 +297,23 @@ app.get('/info', (req,res)=>{
     
     res.render('infor',{infor:infor});
 })
+/* compression */
+app.get('/info-zip', compression(), (req,res)=>{
+    const ll= process.cwd() + '\nId del proceso:'+process.pid
+    + '\nVersion de NodeJS:'+process.version
+    + '\nNombre del proceso:'+process.title
+    + '\nSistema Operativo:'+process.platform
+    + '\n\nUso memoria:'+ util.inspect(process.memoryUsage(), {showHidden: false, depth: 12, colorize: true})  ;
+    logger.info(`Parámetros ${util.inspect(process.memoryUsage(), {showHidden: false, depth: 12, colorize: true})} `);
+
+    const infor ={
+        directorio : ll
+    }
+    
+    res.render('infor',{infor:infor});
+})
+
+
 
 
 
@@ -293,7 +347,11 @@ app.get('/login-error', (req, res)=>{
     res.render('login-error');
 })
 
-
+app.get('*', (req, res) => {
+    const {url, method } = req;
+    logger.warn(`Ruta ${method} ${url} no implementada`)
+    res.send(`Ruta ${method} ${url} no está implementada`);
+})
 /*===== FORK ===*/
 
 /*============================[Rutas]============================*/
@@ -320,11 +378,57 @@ app.get('/calculo-nobloq', (req, res)=>{
     res.send('Sometido en segundo plano');
 })
 
+app.get('*', (req, res) => {
+    const {url, method } = req;
+    logger.warn(`Ruta ${method} ${url} no implementada`)
+    res.send(`Ruta ${method} ${url} no está implementada`);
+})
 /*============================[Servidor]============================*/
 const PORT = process.env.PORT;
 const server = app.listen(PORT, ()=>{
     console.log(`Servidor escuchando en puerto ${PORT}`);
+    logger.info(`Servidor express escuchando en el puerto ${PORT}`);
 })
 server.on('error', error=>{
     console.error(`Error en el servidor ${error}`);
+    logger.error(`Error en servidor: ${error}`);
 });
+server.on('request', (req,res)=>{
+    let {url}= req
+    if (url == '/random') {
+    
+    forkedProcess.send('Inicia');
+    forkedProcess.on('message', msg => {
+        logger.info('mensaje desde el procesos secundario random:');
+        console.log(msg);
+    });
+    
+
+    }
+    if (url == '/info') {
+    
+        forkedProcess.send('Inicia');
+        forkedProcess.on('message', msg => {
+            logger.info('mensaje desde el procesos secundario info:');
+            console.log(msg);
+        });
+        
+    
+        }
+    
+})
+//termino cluster
+}
+function isPrime(num) {
+    if ([2, 3].includes(num)) return true;
+    else if ([2, 3].some(n => num % n == 0)) return false;
+    else {
+        let i = 5, w = 2;
+        while ((i ** 2) <= num) {
+            if (num % i == 0) return false
+            i += w
+            w = 6 - w
+        }
+    }
+    return true
+}
