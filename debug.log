@@ -1,0 +1,77 @@
+[2023-01-16T20:47:50.532] [INFO] default - Parámetros {
+  rss: [33m65642496[39m,
+  heapTotal: [33m54501376[39m,
+  heapUsed: [33m21140672[39m,
+  external: [33m20048991[39m,
+  arrayBuffers: [33m18303673[39m
+} 
+[2023-01-16T20:47:54.849] [INFO] default - Parámetros {
+  rss: [33m48599040[39m,
+  heapTotal: [33m21204992[39m,
+  heapUsed: [33m18995544[39m,
+  external: [33m20019594[39m,
+  arrayBuffers: [33m18272510[39m
+} 
+[2023-01-16T20:47:59.436] [INFO] default - Parámetros {
+  rss: [33m49004544[39m,
+  heapTotal: [33m21204992[39m,
+  heapUsed: [33m19450480[39m,
+  external: [33m20036806[39m,
+  arrayBuffers: [33m18289722[39m
+} 
+[2023-01-16T20:50:58.434] [INFO] default - Parámetros {
+  rss: [33m48226304[39m,
+  heapTotal: [33m21467136[39m,
+  heapUsed: [33m18613864[39m,
+  external: [33m20016515[39m,
+  arrayBuffers: [33m18272510[39m
+} 
+[2023-01-16T20:51:14.964] [INFO] default - Parámetros {
+  rss: [33m49307648[39m,
+  heapTotal: [33m21467136[39m,
+  heapUsed: [33m19439416[39m,
+  external: [33m20020414[39m,
+  arrayBuffers: [33m18273330[39m
+} 
+[2023-01-16T20:57:27.938] [INFO] default - Parámetros {
+  rss: [33m65495040[39m,
+  heapTotal: [33m54239232[39m,
+  heapUsed: [33m21160200[39m,
+  external: [33m20050604[39m,
+  arrayBuffers: [33m18305286[39m
+} 
+[2023-01-16T20:58:35.958] [INFO] default - Parámetros {
+  rss: [33m65503232[39m,
+  heapTotal: [33m54239232[39m,
+  heapUsed: [33m21024880[39m,
+  external: [33m20076603[39m,
+  arrayBuffers: [33m18331285[39m
+} 
+[2023-01-16T21:02:42.246] [INFO] default - Parámetros {
+  rss: [33m65220608[39m,
+  heapTotal: [33m54239232[39m,
+  heapUsed: [33m21079736[39m,
+  external: [33m20050604[39m,
+  arrayBuffers: [33m18305286[39m
+} 
+[2023-01-16T21:02:56.107] [INFO] default - Parámetros {
+  rss: 48447488,
+  heapTotal: 21204992,
+  heapUsed: 18819208,
+  external: 20019594,
+  arrayBuffers: 18272510
+} 
+[2023-01-16T21:04:53.339] [INFO] default - Parámetros {
+  rss: 49082368,
+  heapTotal: 21467136,
+  heapUsed: 18649408,
+  external: 20016515,
+  arrayBuffers: 18272510
+} 
+[2023-01-16T21:05:00.497] [INFO] default - Parámetros {
+  rss: 48955392,
+  heapTotal: 21467136,
+  heapUsed: 18999056,
+  external: 20019594,
+  arrayBuffers: 18272510
+} 

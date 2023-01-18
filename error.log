@@ -1,0 +1,4 @@
+[2023-01-17T16:49:52.395] [WARN] production - Ruta GET /info-p no implementada
+[2023-01-17T18:09:57.112] [WARN] production - Ruta GET /150 no implementada
+[2023-01-17T18:17:13.895] [ERROR] production - Error en servidor: Error: listen EADDRINUSE: address already in use :::3004
+[2023-01-17T20:42:13.008] [ERROR] production - Error en servidor: Error: listen EADDRINUSE: address already in use :::3004
